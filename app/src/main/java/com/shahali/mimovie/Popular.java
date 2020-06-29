@@ -66,7 +66,7 @@ public class Popular extends Fragment implements MovieItemClickListener{
     public void getDataNewMovie() {
         listPopular = new ArrayList<>();
         RESULT_URL = "popular";
-        URL = BASE_URL + RESULT_URL + API_KEY;
+        URL = BASE_URL + RESULT_URL + APIKEY;
         requestQueue = Volley.newRequestQueue(getActivity());
         JsonObjectRequest jsonObjectRequest = new JsonObjectRequest(Request.Method.GET, URL, null, new Response.Listener<JSONObject>() {
             @Override
