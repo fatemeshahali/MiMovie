@@ -1,11 +1,12 @@
 package com.shahali.mimovie;
 
+import android.app.ActivityOptions;
+import android.content.Intent;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ProgressBar;
-
+import android.widget.ImageView;
 import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.GridLayoutManager;
@@ -29,55 +30,48 @@ import java.util.List;
 /**
  * A simple {@link Fragment} subclass.
  */
-public class Popular extends Fragment {
+public class Popular extends Fragment implements MovieItemClickListener{
 
-    public Popular() {
-        // Required empty public constructor
-    }
-    List<Movie> listMoviePopular;
-    RecyclerView recyclerViewPopular;
-    ProgressBar progressBar;
-    String MovieURL;
+    private RecyclerView recyclerViewPopular;
+    List<Movie> listPopular;
     String URL;
-    String imgURL="https://image.tmdb.org/t/p/w500/";
-    String siteURL="https://api.themoviedb.org/3/movie/";
-    String APIKey="?api_key=f0af1eac62e3efe5aeacec8754208a6e";
-    RequestQueue requestQueue;
-    String name;
-    String year;
-    String thumbnailPhoto;
-    String description;
-    String poster;
-    static final String TAG = MovieFragment.class.getSimpleName();
+    String RESULT_URL;
+    String URLimg = "https://image.tmdb.org/t/p/w500";
+    String BASE_URL = "https://api.themoviedb.org/3/movie/";
+    String APIKEY = "?api_key=4029f97f28aebeb722b1518eed1468ff";
+    private RequestQueue requestQueue;
 
 
     public View onCreateView(@NonNull LayoutInflater inflater,
                              ViewGroup container, Bundle savedInstanceState) {
-
         View root = inflater.inflate(R.layout.fragment_popular, container, false);
-        recyclerViewPopular = root.findViewById(R.id.recycleViewPopular);
-        progressBar=root.findViewById(R.id.ProgressBar);
-        GridLayoutManager gridLayoutManager = new GridLayoutManager(getActivity(), 2);
-        recyclerViewPopular.setLayoutManager(gridLayoutManager);
-        requestQueue = Volley.newRequestQueue(getActivity());
-        getDataPopularMovie();
+        recyclerViewPopular = root.findViewById(R.id.recyclerviewpopular);
+
+        GridLayoutManager mGridLayoutManager = new GridLayoutManager(getActivity(), 3);
+        recyclerViewPopular.setLayoutManager(mGridLayoutManager);
+
+        getDataNewMovie();
+
         return root;
     }
-    private void ShowPopularMovie() {
-        //Show Recyclerview
-        ListMovieAdapter listMovieAdapter=new ListMovieAdapter(listMoviePopular,getActivity());
-        recyclerViewPopular.setAdapter(listMovieAdapter);
+    //Show Recyclerview
+    private void showRecyclerView() {
+        ListMovieAdapter newAdapter = new ListMovieAdapter(getActivity(),listPopular, (MovieItemClickListener) this);
+        recyclerViewPopular.setAdapter(newAdapter);
     }
-    //Get data from api for new movies
-    public void getDataPopularMovie() {
-        listMoviePopular = new ArrayList<>();
-         MovieURL = "popular";
-        URL = siteURL + MovieURL + APIKey;
+
+
+
+    //Get data from api for popular movies
+    public void getDataNewMovie() {
+        listPopular = new ArrayList<>();
+        RESULT_URL = "popular";
+        URL = BASE_URL + RESULT_URL + API_KEY;
         requestQueue = Volley.newRequestQueue(getActivity());
         JsonObjectRequest jsonObjectRequest = new JsonObjectRequest(Request.Method.GET, URL, null, new Response.Listener<JSONObject>() {
             @Override
             public void onResponse(JSONObject response) {
-                progressBar.setVisibility(View.GONE);
+
                 try {
                     JSONArray jsonArray = response.getJSONArray("results");
                     for (int i = 0; i < jsonArray.length(); i++) {
@@ -87,11 +81,11 @@ public class Popular extends Fragment {
                         String backdrop_path = results.getString("backdrop_path");
                         String overview = results.getString("overview");
                         String release_date = results.getString("release_date");
-                        listMoviePopular.add(new Movie(title,release_date,overview,imgURL+backdrop_path+APIKey,imgURL+poster_path+APIKey));
+                        listPopular.add(new Movie(title, release_date, overview, URLimg + backdrop_path + APIKEY, URLimg + poster_path + APIKEY));
 
                     }
 
-                    ShowPopularMovie();
+                    showRecyclerView();
                 } catch (JSONException e) {
                     e.printStackTrace();
                 }
@@ -99,10 +93,25 @@ public class Popular extends Fragment {
         }, new Response.ErrorListener() {
             @Override
             public void onErrorResponse(VolleyError error) {
-                progressBar.setVisibility(View.GONE);
                 error.printStackTrace();
             }
         });
         requestQueue.add(jsonObjectRequest);
+    }
+
+
+    @Override
+    public void onMoveClick(Movie movie, ImageView movieImageView) {
+        //there we send movie information to detail activity
+        Intent intent = new Intent(getActivity(), DetailActivity.class);
+        //send movie information to detail activity
+        intent.putExtra("MovieName", movie.getMovieName());
+        intent.putExtra("MovieImage", movie.getMovieImage());
+        intent.putExtra("MoviePoster", movie.getMoviePoster());
+        intent.putExtra("ReleaseDate", movie.getReleaseDate());
+        intent.putExtra("MovieSummary", movie.getMovieSummary());
+        //create animation
+        ActivityOptions options = ActivityOptions.makeSceneTransitionAnimation(getActivity(), movieImageView, "sharedName");
+        startActivity(intent);
     }
 }
