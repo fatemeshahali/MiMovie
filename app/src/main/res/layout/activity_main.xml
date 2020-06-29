@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="utf-8"?>
+<com.google.android.material.circularreveal.CircularRevealRelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".MainActivity">
+
+    <com.google.android.material.tabs.TabLayout
+        android:id="@+id/Tablayout"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <com.google.android.material.tabs.TabItem
+            android:id="@+id/PupularTab"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Pupular" />
+
+        <com.google.android.material.tabs.TabItem
+            android:id="@+id/TopRatedTab"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Toprated" />
+    </com.google.android.material.tabs.TabLayout>
+
+    <androidx.viewpager.widget.ViewPager
+        android:id="@+id/viewPager"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/Tablayout"
+ />
+</com.google.android.material.circularreveal.CircularRevealRelativeLayout>
